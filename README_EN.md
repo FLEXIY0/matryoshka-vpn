@@ -6,17 +6,15 @@
 
 Automated collector of VPN configs, filtered for Russian White List Service (SNI/CIDR bypass).
 
-> 📱 **We recommend using the [Hiddify](https://github.com/hiddify/hiddify-next/releases) app** for best compatibility.
+> **I recommend using the [Hiddify](https://github.com/hiddify/hiddify-next/releases) app** for best compatibility.
 
 | File | Description | Time (MSK) | Date |
 |--|--|--|--|
-| [`russia_whitelist.txt`](https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/russia_whitelist.txt) | 🇷🇺 Russia White List Only | 17:06 | 07.01.2026 |
+| [`russia_whitelist.txt`](https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/russia_whitelist.txt) | 🇷🇺 Russia White List Only | 17:08 | 07.01.2026 |
 
-## 🚀 How to use
-
-Copy the link below or scan the QR code in **Hiddify**.
-
-![QR Code]()
+<p align="center">
+  <img src="https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/qr.png" alt="QR Code" width="200" />
+</p>
 
 *Updates automatically.*
 
