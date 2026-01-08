@@ -2,27 +2,21 @@
 
 [🇬🇧 English Version](README_EN.md)
 
-**Никто так не популяризует VPN, как Роскомнадзор**
+**Nested Freedom for RuNet.**
 
 Автоматический сборщик VPN конфигураций, отфильтрованный для обхода блокировок в России (White List SNI/CIDR).
 
-### 📱 V2Ray / Hiddify / Nekoray
-
-> Рекомендую [Hiddify](https://github.com/hiddify/hiddify-next/releases) для мобильных устройств
+> **Рекомендую использовать приложение [Hiddify](https://github.com/hiddify/hiddify-next/releases)** для максимальной совместимости.
 
 | Файл | Описание | Время (МСК) | Дата |
 |--|--|--|--|
-| [`russia_whitelist.txt`](https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/russia_whitelist.txt) | 🇷🇺 White List (V2Ray формат) | 16:31 | 08.01.2026 |
+| [`russia_whitelist.txt`](https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/russia_whitelist.txt) | 🇷🇺 Россия White List (Только белые списки) | 16:52 | 08.01.2026 |
 
-### ⚡ Clash Verge / Clash Meta
+<p align="center">
+  <img src="https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/qr.png" alt="QR Code" width="200" />
+</p>
 
-> Для [Clash Verge](https://github.com/clash-verge-rev/clash-verge-rev/releases) — добавьте ссылку как подписку
-
-| Файл | Описание | Время (МСК) | Дата |
-|--|--|--|--|
-| [`russia_whitelist_clash.yaml`](https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/russia_whitelist_clash.yaml) | 🇷🇺 White List (Clash YAML) | 16:31 | 08.01.2026 |
-
-*Автоматическое обновление каждые 4 часа.*
+*Автоматическое обновление каждые несколько часов.*
 
 ---
 #### Поддержка
