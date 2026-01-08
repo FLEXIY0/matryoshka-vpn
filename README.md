@@ -12,7 +12,7 @@
 
 | Файл | Описание | Время (МСК) | Дата |
 |--|--|--|--|
-| [`russia_whitelist.txt`](https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/russia_whitelist.txt) | 🇷🇺 White List (V2Ray формат) | 16:15 | 08.01.2026 |
+| [`russia_whitelist.txt`](https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/russia_whitelist.txt) | 🇷🇺 White List (V2Ray формат) | 16:31 | 08.01.2026 |
 
 ### ⚡ Clash Verge / Clash Meta
 
@@ -20,7 +20,7 @@
 
 | Файл | Описание | Время (МСК) | Дата |
 |--|--|--|--|
-| [`russia_whitelist_clash.yaml`](https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/russia_whitelist_clash.yaml) | 🇷🇺 White List (Clash YAML) | 16:15 | 08.01.2026 |
+| [`russia_whitelist_clash.yaml`](https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/russia_whitelist_clash.yaml) | 🇷🇺 White List (Clash YAML) | 16:31 | 08.01.2026 |
 
 *Автоматическое обновление каждые 4 часа.*
 
