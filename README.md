@@ -10,7 +10,9 @@
 
 | Файл | Описание | Время (МСК) | Дата |
 |------|----------|-------------|------|
-| [![Config](https://img.shields.io/badge/russia__whitelist.txt-скопировать-blue?style=flat-square)](https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/russia_whitelist.txt) | Зарубежные локации (Approved) | 14:11 | 09.01.2026 |
+```
+| [russia_whitelist.txt](https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/russia_whitelist.txt```
+| [russia_whitelist.txt](https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/russia_whitelist.txt) | Проверенные зарубежные узлы | 14:13 09.01.2026 |
 
 **Ссылка для подписки:**
 ```
@@ -29,5 +31,7 @@ https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/russia_whitelist.txt
 
 ```
 USDT (TRC20): TNmoKXWbNDMuGJxyaHALzk6zNYZFDDhM8J
+```
+```
 TON:          UQCD6FJjYM8T-oprHp6zb6X5-S-ETWiR27uIfXsuFv9fPQ2Z
 ```
