@@ -10,7 +10,7 @@ Automated collector of VPN configs, filtered for Russian White List Service (SNI
 
 | File | Description | Time (MSK) | Date |
 |--|--|--|--|
-| [`russia_whitelist.txt`](https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/russia_whitelist.txt) | 🇷🇺 Russia White List Only | 13:45 | 09.01.2026 |
+| [`russia_whitelist.txt`](https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/russia_whitelist.txt) | 🇷🇺 Russia White List Only | 13:59 | 09.01.2026 |
 
 <p align="center">
   <img src="https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/qr.png" alt="QR Code" width="200" />
