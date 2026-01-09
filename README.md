@@ -2,45 +2,21 @@
 
 [🇬🇧 English Version](README_EN.md)
 
-**Никто так не популяризует VPN, как Роскомнадзор**
+**Nested Freedom for RuNet.**
 
 Автоматический сборщик VPN конфигураций, отфильтрованный для обхода блокировок в России (White List SNI/CIDR).
 
-![QR-код для Hiddify](https://github.com/FLEXIY0/matryoshka-vpn/raw/main/qr-codes/hiddify_qr.png)
-
-### V2Ray / Hiddify / Nekoray
-
-> Рекомендую [Hiddify](https://github.com/hiddify/hiddify-next/releases) для мобильных устройств
+> **Рекомендую использовать приложение [Hiddify](https://github.com/hiddify/hiddify-next/releases)** для максимальной совместимости.
 
 | Файл | Описание | Время (МСК) | Дата |
 |--|--|--|--|
-| [`russia_whitelist.txt`](https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/russia_whitelist.txt) | 🇷🇺 White List (V2Ray формат) | 07:44 | 09.01.2026 |
+| [`russia_whitelist.txt`](https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/russia_whitelist.txt) | 🇷🇺 Россия White List (Только белые списки) | 07:59 | 09.01.2026 |
 
-### Clash Verge / Clash Meta
+<p align="center">
+  <img src="https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/qr.png" alt="QR Code" width="200" />
+</p>
 
-> Для [Clash Verge](https://github.com/clash-verge-rev/clash-verge-rev/releases) — добавьте ссылку как подписку
-
-| Файл | Описание | Время (МСК) | Дата |
-|--|--|--|--|
-| [`russia_whitelist_clash.yaml`](https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/russia_whitelist_clash.yaml) | 🇷🇺 White List (Clash YAML) | 07:44 | 09.01.2026 |
-
-### sing-box / Другие клиенты
-
-> Для [sing-box](https://github.com/SagerNet/sing-box) и других клиентов — base64-encoded подписка
-
-| Файл | Описание | Время (МСК) | Дата |
-|--|--|--|--|
-| [`russia_whitelist_base64.txt`](https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/russia_whitelist_base64.txt) | 🇷🇺 White List (Base64) | 07:44 | 09.01.2026 |
-
-### JSON (Универсальный формат)
-
-> JSON файл с конфигами для любых клиентов
-
-| Файл | Описание | Время (МСК) | Дата |
-|--|--|--|--|
-| [`russia_whitelist.json`](https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/russia_whitelist.json) | 🇷🇺 White List (JSON) | 07:44 | 09.01.2026 |
-
-*Автоматическое обновление каждые 4 часа.*
+*Автоматическое обновление каждые несколько часов.*
 
 ---
 #### Поддержка
