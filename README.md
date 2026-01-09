@@ -4,15 +4,12 @@
 
 Автоматический сборщик VPN конфигураций для обхода блокировок в России.
 
----
-
-## Конфиги
 
 | Файл | Описание | Время (МСК) | Дата |
 |------|----------|-------------|------|
 ```
 | [russia_whitelist.txt](https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/russia_whitelist.txt```
-| [russia_whitelist.txt](https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/russia_whitelist.txt) | Проверенные зарубежные узлы | 14:13 09.01.2026 |
+| [russia_whitelist.txt](https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/russia_whitelist.txt) | Проверенные зарубежные узлы | 14:15 09.01.2026 |
 
 **Ссылка для подписки:**
 ```
