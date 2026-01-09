@@ -1,25 +1,51 @@
-# 🪆 Matryoshka VPN
+# Matryoshka VPN
 
-[🇬🇧 English Version](README_EN.md)
+> *Никто так не спонсирует использование VPN, как Роскомнадзор*
 
-**Nested Freedom for RuNet.**
+Автоматический сборщик VPN конфигураций для обхода блокировок в России.
 
-Автоматический сборщик VPN конфигураций, отфильтрованный для обхода блокировок в России (White List SNI/CIDR).
+[🇬🇧 English](README_EN.md)
 
-> **Рекомендую использовать приложение [Hiddify](https://github.com/hiddify/hiddify-next/releases)** для максимальной совместимости.
+---
 
-| Файл | Описание | Время (МСК) | Дата |
-|--|--|--|--|
-| [`russia_whitelist.txt`](https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/russia_whitelist.txt) | 🇷🇺 Россия White List (Только белые списки) | 13:59 | 09.01.2026 |
+## Конфиги
+
+| Файл | Описание | Обновлено |
+|------|----------|-----------|
+No, the cursor is at `<|cursor|>` inside the `content` string.
+
+```python
+| Файл | Описание | Обновлено |
+|------|----------|-----------|
+<|cursor|>
+```
+
+So I need to provide the row.
+
+```python
+| [russia_whitelist.txt](https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/russia_whitelist.txt) | Проверенные зарубежные узлы | 14:03 09.01.2026 |
+
+
 
 <p align="center">
   <img src="https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/qr.png" alt="QR Code" width="200" />
 </p>
 
-*Автоматическое обновление каждые несколько часов.*
+**Рекомендуемые клиенты:** Hiddify, Kering, Necobox, V2Ray
 
 ---
-#### Поддержка
-DT: `TNmoKXWbNDMuGJxyaHALzk6zNYZFDDhM8J` (TRC20 USDT)
 
-TON: `UQCD6FJjYM8T-oprHp6zb6X5-S-ETWiR27uIfXsuFv9fPQ2Z`
+**Фильтрация:**
+- **Только серверы с флагами стран 🏳️**
+- Удаление конфигов без эмодзи
+- Блокировка стран-изгоев (RU, BY, CN, IR, KP, CU)
+- Обновление каждые 4 часа
+
+---
+
+### Поддержка
+
+```
+USDT (TRC20): TNmoKXWbNDMuGJxyaHALzk6zNYZFDDhM8J
+TON:          UQCD6FJjYM8T-oprHp6zb6X5-S-ETWiR27uIfXsuFv9fPQ2Z
+```
