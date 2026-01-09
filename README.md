@@ -4,42 +4,24 @@
 
 Автоматический сборщик VPN конфигураций для обхода блокировок в России.
 
-[🇬🇧 English](README_EN.md)
-
 ---
 
 ## Конфиги
 
-| Файл | Описание | Обновлено |
-|------|----------|-----------|
-No, the cursor is at `<|cursor|>` inside the `content` string.
+| Файл | Описание | Время (МСК) | Дата |
+|------|----------|-------------|------|
+| [![Config](https://img.shields.io/badge/russia__whitelist.txt-скопировать-blue?style=flat-square)](https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/russia_whitelist.txt) | Зарубежные локации (Approved) | 14:11 | 09.01.2026 |
 
-```python
-| Файл | Описание | Обновлено |
-|------|----------|-----------|
-<|cursor|>
+**Ссылка для подписки:**
 ```
-
-So I need to provide the row.
-
-```python
-| [russia_whitelist.txt](https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/russia_whitelist.txt) | Проверенные зарубежные узлы | 14:03 09.01.2026 |
-
-
+https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/russia_whitelist.txt
+```
 
 <p align="center">
   <img src="https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/qr.png" alt="QR Code" width="200" />
 </p>
 
 **Рекомендуемые клиенты:** Hiddify, Kering, Necobox, V2Ray
-
----
-
-**Фильтрация:**
-- **Только серверы с флагами стран 🏳️**
-- Удаление конфигов без эмодзи
-- Блокировка стран-изгоев (RU, BY, CN, IR, KP, CU)
-- Обновление каждые 4 часа
 
 ---
 
