@@ -1,25 +1,47 @@
 # 🪆 Matryoshka VPN
 
-[🇬🇧 English Version](README_EN.md)
+> *Никто так не спонсирует использование VPN, как Роскомнадзор*
 
-**Nested Freedom for RuNet.**
+Автоматический сборщик VPN конфигураций SNI/CIDR (WhiteList) и SNI (BlackList).
 
-Автоматический сборщик VPN конфигураций, отфильтрованный для обхода блокировок в России (White List SNI/CIDR).
-
-> **Рекомендую использовать приложение [Hiddify](https://github.com/hiddify/hiddify-next/releases)** для максимальной совместимости.
 
 | Файл | Описание | Время (МСК) | Дата |
-|--|--|--|--|
-| [`russia_whitelist.txt`](https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/russia_whitelist.txt) | 🇷🇺 Россия White List (Только белые списки) | 07:51 | 12.01.2026 |
+|------|----------|-------------|------|
+| [`russia_whitelist.txt`](https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/russia_whitelist.txt) | Проверенные зарубежные узлы | 07:54 | 12.01.2026 |
+
+**Ссылка для подписки:**
+```text
+https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/russia_whitelist.txt
+```
 
 <p align="center">
   <img src="https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/qr.png" alt="QR Code" width="200" />
 </p>
 
-*Автоматическое обновление каждые несколько часов.*
+**Рекомендуемые клиенты:** Hiddify, Kering, Necobox, V2Ray
 
 ---
-#### Поддержка
-DT: `TNmoKXWbNDMuGJxyaHALzk6zNYZFDDhM8J` (TRC20 USDT)
 
-TON: `UQCD6FJjYM8T-oprHp6zb6X5-S-ETWiR27uIfXsuFv9fPQ2Z`
+### Поддержка
+
+**USDT (TRC20):**
+```text
+TNmoKXWbNDMuGJxyaHALzk6zNYZFDDhM8J
+```
+
+**TON:**
+```text
+UQCD6FJjYM8T-oprHp6zb6X5-S-ETWiR27uIfXsuFv9fPQ2Z
+```
+
+---
+
+
+<a href="https://www.star-history.com/#FLEXIY0/matryoshka-vpn&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=FLEXIY0/matryoshka-vpn&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=FLEXIY0/matryoshka-vpn&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=FLEXIY0/matryoshka-vpn&type=date&legend=top-left" />
+ </picture>
+</a>
+
