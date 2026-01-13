@@ -7,7 +7,7 @@
 
 | Файл | Описание | Время (МСК) | Дата |
 |------|----------|-------------|------|
-| [`russia_whitelist.txt`](https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/russia_whitelist.txt) | Проверенные зарубежные узлы | 15:12 | 13.01.2026 |
+| [`russia_whitelist.txt`](https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/russia_whitelist.txt) | Проверенные зарубежные узлы | 15:59 | 13.01.2026 |
 
 **Ссылка для подписки:**
 ```text
@@ -18,7 +18,7 @@ https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/russia_whitelist.txt
   <img src="https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/qr.png" alt="QR Code" width="200" />
 </p>
 
-**Рекомендуемые клиенты:** Hiddify, Kering, Necobox, V2Ray
+**Рекомендуемые клиенты:** [Hiddify](https://github.com/hiddify/hiddify-app/releases), [Karing](https://github.com/KaringX/karing/releases), [NekoBox](https://github.com/MatsuriDayo/NekoBoxForAndroid/releases), [v2rayNG](https://github.com/2dust/v2rayNG/releases)
 
 ---
 
