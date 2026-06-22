@@ -10,7 +10,7 @@ Outputs:
 
 Usage:
   python3 scripts/stability_checker.py           # full run (recheck pool + scan for new)
-  python3 scripts/stability_checker.py --quick   # recheck stable pool only
+  python3 scripts/stability_checker.py --quick   # recheck stable pool only (run every 30-60min)
   python3 scripts/stability_checker.py --scan    # force scan even if pool is full
   python3 scripts/stability_checker.py --no-xray # TCP-only mode (no xray binary required)
   python3 scripts/stability_checker.py --top 20  # export top-20 instead of 15
@@ -47,7 +47,7 @@ STABLE_POOL_FILE = CONFIGS_DIR / "stable_pool.json"
 STABLE_TOP_FILE = CONFIGS_DIR / "stable_top15.txt"
 
 # Domains blocked in Russia — from gfwlist, ACL4SSR, v2fly, loyalsoldier/v2ray-rules-dat
-# A working proxy must be able to reach at least one of these.
+# A working proxy must successfully reach MIN_PASS_URLS of these.
 TEST_URLS = [
     "https://www.youtube.com",
     "https://x.com",
@@ -58,15 +58,18 @@ TEST_URLS = [
     "https://www.spotify.com",
 ]
 
-TCP_TIMEOUT = 4.0
-PROXY_TIMEOUT = 18.0
-MAX_POOL = 60
-TOP_N = 15
-EVICT_AFTER = 3
-TCP_WORKERS = 50
-PROXY_WORKERS = 5
-TCP_CANDIDATES = 120
+TCP_TIMEOUT = 4.0       # seconds for TCP connect test
+PROXY_TIMEOUT = 20.0    # seconds per URL inside proxy test
+MAX_POOL = 60           # max configs in stable pool
+TOP_N = 15              # configs to export to stable_top15.txt
+EVICT_AFTER = 3         # consecutive failures before eviction from pool
+TCP_WORKERS = 50        # parallel TCP tests
+PROXY_WORKERS = 5       # parallel xray proxy tests (each spawns a process)
+TCP_CANDIDATES = 120    # top TCP results to proxy-test when scanning
+MIN_PASS_URLS = 2       # URLs that must succeed to count a config as working
 
+
+# ---------- Data model ----------
 
 @dataclass
 class ConfigRecord:
@@ -84,10 +87,15 @@ class ConfigRecord:
 
     @property
     def score(self) -> float:
+        """
+        Composite score for ranking (higher = better).
+        Weights: success_rate 50%, recency 30%, latency 20%.
+        """
         if self.success_count == 0:
             return 0.0
         total = self.success_count + self.failure_count
         rate = self.success_count / total
+
         recency = 0.0
         if self.last_success:
             try:
@@ -96,7 +104,9 @@ class ConfigRecord:
                 recency = max(0.0, 1.0 - age_h / 24)
             except Exception:
                 pass
+
         lat_score = max(0.0, 1.0 - self.latency_ms / 2000)
+
         return rate * 0.50 + recency * 0.30 + lat_score * 0.20
 
     def to_dict(self) -> dict:
@@ -108,6 +118,8 @@ class ConfigRecord:
 def now_iso() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
+
+# ---------- Config URI parsing ----------
 
 def parse_config(uri: str) -> Optional[ConfigRecord]:
     uri = uri.strip()
@@ -138,6 +150,8 @@ def parse_config(uri: str) -> Optional[ConfigRecord]:
     return None
 
 
+# ---------- TCP reachability test ----------
+
 def tcp_test(host: str, port: int, timeout: float = TCP_TIMEOUT) -> float:
     try:
         t0 = time.monotonic()
@@ -147,6 +161,8 @@ def tcp_test(host: str, port: int, timeout: float = TCP_TIMEOUT) -> float:
     except Exception:
         return -1.0
 
+
+# ---------- xray proxy test ----------
 
 def find_xray() -> Optional[str]:
     candidates = [
@@ -226,10 +242,27 @@ def _build_outbound(record: ConfigRecord) -> Optional[dict]:
     return None
 
 
+def _wait_for_port(port: int, deadline: float) -> bool:
+    """Poll until xray SOCKS port is actually accepting connections."""
+    while time.monotonic() < deadline:
+        try:
+            with socket.create_connection(("127.0.0.1", port), timeout=0.3):
+                return True
+        except OSError:
+            time.sleep(0.2)
+    return False
+
+
 def proxy_test(record: ConfigRecord, xray_bin: str, timeout: float = PROXY_TIMEOUT) -> tuple[bool, float]:
+    """
+    Start xray, wait until SOCKS port is ready, send requests through it.
+    Requires MIN_PASS_URLS successful responses to accept the config.
+    Returns (success, best_latency_ms).
+    """
     outbound = _build_outbound(record)
     if outbound is None:
         return False, -1.0
+
     local_port = random.randint(20000, 59000)
     xray_cfg = {
         "log": {"loglevel": "none"},
@@ -242,24 +275,39 @@ def proxy_test(record: ConfigRecord, xray_bin: str, timeout: float = PROXY_TIMEO
         fd, cfg_path = tempfile.mkstemp(suffix=".json", prefix="mxvpn_")
         with os.fdopen(fd, "w") as f:
             json.dump(xray_cfg, f)
+
         proc = subprocess.Popen([xray_bin, "run", "-c", cfg_path],
                                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        time.sleep(2.0)
+
+        # Wait until port is live — no fixed sleep
+        if not _wait_for_port(local_port, deadline=time.monotonic() + 6.0):
+            return False, -1.0
+
+        proxy_url = f"socks5h://127.0.0.1:{local_port}"  # socks5h: DNS resolved remotely
+        passed = 0
+        best_ms = 9999.0
+
         for url in TEST_URLS:
             try:
                 t0 = time.monotonic()
-                result = subprocess.run(
+                r = subprocess.run(
                     ["curl", "-sf", "-o", "/dev/null", "-w", "%{http_code}",
-                     "--socks5-hostname", f"127.0.0.1:{local_port}",
-                     "--max-time", str(int(timeout)), "--connect-timeout", "5", "-L", url],
-                    capture_output=True, text=True, timeout=timeout + 3,
+                     "--proxy", proxy_url,
+                     "--max-time", str(int(timeout)),
+                     "--connect-timeout", "8",
+                     "-L", url],
+                    capture_output=True, text=True, timeout=timeout + 4,
                 )
                 ms = (time.monotonic() - t0) * 1000.0
-                code = result.stdout.strip()
+                code = r.stdout.strip()
                 if code.isdigit() and 200 <= int(code) < 400:
-                    return True, ms
+                    passed += 1
+                    best_ms = min(best_ms, ms)
+                    if passed >= MIN_PASS_URLS:
+                        return True, best_ms
             except Exception:
                 continue
+
         return False, -1.0
     finally:
         if proc:
@@ -274,6 +322,8 @@ def proxy_test(record: ConfigRecord, xray_bin: str, timeout: float = PROXY_TIMEO
             except Exception:
                 pass
 
+
+# ---------- Pool persistence ----------
 
 def load_pool() -> list[ConfigRecord]:
     if not STABLE_POOL_FILE.exists():
@@ -316,6 +366,8 @@ def export_top(records: list[ConfigRecord], n: int = TOP_N) -> int:
     return len(ranked)
 
 
+# ---------- Phase 1: Recheck pool ----------
+
 def recheck_pool(pool: list[ConfigRecord], xray_bin: Optional[str]) -> list[ConfigRecord]:
     if not pool:
         return pool
@@ -354,17 +406,20 @@ def recheck_pool(pool: list[ConfigRecord], xray_bin: Optional[str]) -> list[Conf
     return kept
 
 
+# ---------- Phase 2: Scan main list ----------
+
 def scan_main_list(pool: list[ConfigRecord], xray_bin: Optional[str], needed: int) -> list[ConfigRecord]:
     if not MAIN_CONFIGS.exists():
         print(f"[!] Main configs not found: {MAIN_CONFIGS}")
         return pool
+
     pool_uris = {r.uri for r in pool}
     all_uris = [u.strip() for u in MAIN_CONFIGS.read_text(encoding="utf-8").splitlines()
                 if u.strip() and not u.startswith("#")]
     new_uris = [u for u in all_uris if u not in pool_uris]
     print(f"\n[Phase 2] Found {len(new_uris)} new candidates (from {len(all_uris)} total).")
     if not new_uris:
-        print("[Phase 2] No new candidates to scan.")
+        print("[Phase 2] No new candidates.")
         return pool
 
     records = [r for r in (parse_config(u) for u in new_uris) if r]
@@ -382,11 +437,17 @@ def scan_main_list(pool: list[ConfigRecord], xray_bin: Optional[str], needed: in
     if not tcp_passed:
         return pool
 
-    candidates = sorted(tcp_passed, key=lambda r: r.latency_ms)[:TCP_CANDIDATES]
+    # REALITY first (most censorship-resistant), then by latency
+    def _priority(r: ConfigRecord) -> tuple:
+        return (-int("reality" in r.uri.lower()), r.latency_ms)
+
+    candidates = sorted(tcp_passed, key=_priority)[:TCP_CANDIDATES]
+    reality_count = sum(1 for r in candidates if "reality" in r.uri.lower())
+    print(f"[Phase 2b] Testing top {len(candidates)} candidates ({reality_count} REALITY)...")
 
     if not xray_bin:
         to_add = candidates[:needed]
-        print(f"[Phase 2b] No xray — adding {len(to_add)} by TCP latency only.")
+        print(f"[Phase 2b] No xray — adding {len(to_add)} by TCP latency.")
         for r in to_add:
             r.success_count = 1
             r.last_checked = now_iso()
@@ -394,7 +455,6 @@ def scan_main_list(pool: list[ConfigRecord], xray_bin: Optional[str], needed: in
             pool.append(r)
         return pool
 
-    print(f"[Phase 2b] Proxy-testing top {len(candidates)} candidates (need {needed} more)...")
     added = 0
 
     def _proxy(r: ConfigRecord) -> tuple[ConfigRecord, bool, float]:
@@ -413,7 +473,8 @@ def scan_main_list(pool: list[ConfigRecord], xray_bin: Optional[str], needed: in
                 r.last_success = now_iso()
                 pool.append(r)
                 added += 1
-                print(f"  [+] {lat:6.0f}ms  {r.protocol:7s} {r.host}:{r.port}  {r.name[:30]}")
+                sec = "REALITY" if "reality" in r.uri.lower() else r.protocol.upper()
+                print(f"  [+] {lat:6.0f}ms  {sec:10s} {r.host}:{r.port}  {r.name[:30]}")
                 if added >= needed:
                     for f in futures:
                         f.cancel()
@@ -422,6 +483,8 @@ def scan_main_list(pool: list[ConfigRecord], xray_bin: Optional[str], needed: in
     print(f"[Phase 2b] Added {added} new config(s) to stable pool.")
     return pool
 
+
+# ---------- Main ----------
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Matryoshka VPN Stability Checker",
@@ -452,15 +515,16 @@ def main() -> None:
     save_pool(pool)
     n_exported = export_top(pool, args.top)
 
-    print(f"\n[+] Stable pool: {len(pool)} configs → {STABLE_POOL_FILE}")
-    print(f"[+] Top-{n_exported} → {STABLE_TOP_FILE}")
+    print(f"\n[+] Stable pool: {len(pool)} configs → {STABLE_POOL_FILE.name}")
+    print(f"[+] Top-{n_exported} → {STABLE_TOP_FILE.name}")
 
     if pool:
         top5 = sorted(pool, key=lambda r: r.score, reverse=True)[:5]
         print("\n[*] Top-5 by score:")
         for r in top5:
+            sec = "REALITY" if "reality" in r.uri.lower() else r.protocol.upper()
             print(f"    score={r.score:.3f}  lat={r.latency_ms:.0f}ms  "
-                  f"ok={r.success_count}  fail={r.failure_count}  {r.host}:{r.port}")
+                  f"ok={r.success_count}  fail={r.failure_count}  {sec} {r.host}:{r.port}")
 
 
 if __name__ == "__main__":
