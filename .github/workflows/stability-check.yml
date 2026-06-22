@@ -1,0 +1,64 @@
+name: VPN Stability Check
+
+on:
+  schedule:
+    # Full run every hour: recheck pool + scan russia_whitelist.txt for new candidates
+    - cron: '0 * * * *'
+  push:
+    branches: [main]
+    paths:
+      # Re-run whenever the main config list is updated (new batch of configs)
+      - 'configs/russia_whitelist.txt'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Run mode'
+        required: false
+        default: 'full'
+        type: choice
+        options:
+          - full    # recheck pool + scan for new candidates
+          - quick   # recheck stable pool only (faster)
+
+permissions:
+  contents: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install xray-core
+        run: |
+          XRAY_VER=$(curl -sf "https://api.github.com/repos/XTLS/Xray-core/releases/latest" \
+            | python3 -c "import sys,json; print(json.load(sys.stdin)['tag_name'])")
+          echo "Installing xray ${XRAY_VER}"
+          wget -q "https://github.com/XTLS/Xray-core/releases/download/${XRAY_VER}/Xray-linux-64.zip"
+          unzip -q Xray-linux-64.zip xray
+          mkdir -p bin && mv xray bin/xray && chmod +x bin/xray
+          echo "xray version: $(bin/xray version | head -1)"
+
+      - name: Run stability checker
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.mode }}" = "quick" ]; then
+            python3 scripts/stability_checker.py --quick
+          else
+            python3 scripts/stability_checker.py
+          fi
+
+      - name: Commit stable configs
+        run: |
+          git config user.name "stability-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add configs/stable_pool.json configs/stable_top15.txt
+          if git diff --staged --quiet; then
+            echo "No changes — pool is already up to date."
+          else
+            git commit -m "chore: update stable configs $(date -u +%Y-%m-%dT%H:%M:%SZ) [skip ci]"
+            git pull --rebase
+            git push
+          fi
