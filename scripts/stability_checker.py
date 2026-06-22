@@ -59,13 +59,14 @@ TEST_URLS = [
 ]
 
 TCP_TIMEOUT = 4.0       # seconds for TCP connect test
-PROXY_TIMEOUT = 18.0    # seconds for full xray proxy test
+PROXY_TIMEOUT = 20.0    # seconds for full xray proxy test
 MAX_POOL = 60           # max configs in stable pool
 TOP_N = 15              # configs to export to stable_top15.txt
 EVICT_AFTER = 3         # consecutive failures before eviction from pool
 TCP_WORKERS = 50        # parallel TCP tests
 PROXY_WORKERS = 5       # parallel xray proxy tests (each spawns a process)
 TCP_CANDIDATES = 120    # top TCP results to proxy-test when scanning
+MIN_PASS_URLS = 2       # minimum URLs that must succeed to accept a config
 
 
 # ---------- Data model ----------
@@ -303,9 +304,21 @@ def _build_outbound(record: ConfigRecord) -> Optional[dict]:
     return None
 
 
+def _wait_for_port(port: int, deadline: float) -> bool:
+    """Wait until xray SOCKS port is actually listening."""
+    while time.monotonic() < deadline:
+        try:
+            with socket.create_connection(("127.0.0.1", port), timeout=0.3):
+                return True
+        except OSError:
+            time.sleep(0.2)
+    return False
+
+
 def proxy_test(record: ConfigRecord, xray_bin: str, timeout: float = PROXY_TIMEOUT) -> tuple[bool, float]:
     """
-    Start xray with this config as outbound, send HTTP requests through it.
+    Start xray, wait until its SOCKS port is ready, then send requests through it.
+    Requires MIN_PASS_URLS successful URL checks to count as working.
     Returns (success, latency_ms).
     """
     outbound = _build_outbound(record)
@@ -335,30 +348,38 @@ def proxy_test(record: ConfigRecord, xray_bin: str, timeout: float = PROXY_TIMEO
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )
-        time.sleep(2.0)  # wait for xray to initialize
 
-        # Try each test URL until one succeeds
+        # Wait until xray is actually listening — no fixed sleep
+        if not _wait_for_port(local_port, deadline=time.monotonic() + 6.0):
+            return False, -1.0
+
+        proxy_url = f"socks5h://127.0.0.1:{local_port}"  # socks5h = remote DNS via proxy
+        passed = 0
+        best_ms = 9999.0
+
         for url in TEST_URLS:
             try:
                 t0 = time.monotonic()
                 result = subprocess.run(
                     [
                         "curl", "-sf", "-o", "/dev/null", "-w", "%{http_code}",
-                        "--socks5-hostname", f"127.0.0.1:{local_port}",
+                        "--proxy", proxy_url,
                         "--max-time", str(int(timeout)),
-                        "--connect-timeout", "5",
-                        "-L",  # follow redirects
+                        "--connect-timeout", "8",
+                        "-L",
                         url,
                     ],
                     capture_output=True,
                     text=True,
-                    timeout=timeout + 3,
+                    timeout=timeout + 4,
                 )
                 ms = (time.monotonic() - t0) * 1000.0
                 code = result.stdout.strip()
-                # Accept any successful HTTP code (200, 204, 301-308)
                 if code.isdigit() and 200 <= int(code) < 400:
-                    return True, ms
+                    passed += 1
+                    best_ms = min(best_ms, ms)
+                    if passed >= MIN_PASS_URLS:
+                        return True, best_ms
             except Exception:
                 continue
 
@@ -511,8 +532,12 @@ def scan_main_list(
     if not tcp_passed:
         return pool
 
-    # Take best by latency for proxy testing
-    candidates = sorted(tcp_passed, key=lambda r: r.latency_ms)[:TCP_CANDIDATES]
+    # Sort: REALITY configs first (most censorship-resistant), then by latency
+    def _priority(r: ConfigRecord) -> tuple:
+        is_reality = int("reality" in r.uri.lower())
+        return (-is_reality, r.latency_ms)
+
+    candidates = sorted(tcp_passed, key=_priority)[:TCP_CANDIDATES]
 
     if not xray_bin:
         # No xray: accept top TCP results directly with lower confidence
