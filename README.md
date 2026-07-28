@@ -7,7 +7,7 @@
 
 | Файл | Описание | Время (МСК) | Дата |
 |------|----------|-------------|------|
-| [`russia_whitelist.txt`](https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/russia_whitelist.txt) | Проверенные зарубежные узлы | 17:35 | 28.07.2026 |
+| [`russia_whitelist.txt`](https://github.com/FLEXIY0/matryoshka-vpn/raw/main/configs/russia_whitelist.txt) | Проверенные зарубежные узлы | 19:21 | 28.07.2026 |
 
 **Ссылка для подписки:**
 ```text
